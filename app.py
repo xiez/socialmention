@@ -1,7 +1,9 @@
 #!/bin/env python
 
+import os
 import urllib2
 import ConfigParser
+from datetime import datetime
 
 ########## utility function
 def parse_interval(interval):
@@ -39,7 +41,7 @@ def parse_conf_file(file_path):
     config_dict = {}
     from_ts_str = config.get('GENERAL', 'from_ts')
     config_dict['from_ts'] = parse_interval(from_ts_str)
-    config_dict['output_file'] = config.get('GENERAL', 'output_file')
+    config_dict['output_file_dir'] = config.get('GENERAL', 'output_file_dir')
 
     query = config.get('SEARCH ARGS', 'q', '')
     query_list = []
@@ -108,6 +110,7 @@ def do_search_and_save_to_file(search_url, output_file):
     the_page = res.read()
     with open(output_file, "a") as f:
         f.write(the_page)
+        print "Save search result to file: %s" % output_file
 
 def main():
     """Main logic of the program.
@@ -116,8 +119,14 @@ def main():
     url_base = 'http://api2.socialmention.com/search?'
     search_url = build_search_url(conf_dict, url_base)
 
-    output_file = conf_dict['output_file']
-    do_search_and_save_to_file(search_url, output_file)
+    output_file_dir = conf_dict['output_file_dir']
+    query_list = conf_dict['query_list']
+    for q in query_list:
+        now = datetime.now()
+        file_name = '%s_%s_%s' % (q, now.strftime("%Y%m%d"),
+                                  now.strftime("%H%M%S"))
+        output_file = os.path.join(output_file_dir, file_name)
+        do_search_and_save_to_file(search_url, output_file)
 
 if __name__ == "__main__":
     main()
