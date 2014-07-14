@@ -119,12 +119,13 @@ def main():
     url_base = 'http://api2.socialmention.com/search?'
     search_url = build_search_url(conf_dict, url_base)
 
+    format = conf_dict['format']
     output_file_dir = conf_dict['output_file_dir']
     query_list = conf_dict['query_list']
     for q in query_list:
         now = datetime.now()
-        file_name = '%s_%s_%s' % (q, now.strftime("%Y%m%d"),
-                                  now.strftime("%H%M%S"))
+        file_name = '%s_%s_%s.%s' % (q, now.strftime("%Y%m%d"),
+                                     now.strftime("%H%M%S"), format)
         output_file = os.path.join(output_file_dir, file_name)
         do_search_and_save_to_file(search_url, output_file)
 
