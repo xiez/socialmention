@@ -1,5 +1,7 @@
 #!/bin/env python
 
+import argparse
+import inspect
 import os
 import urllib2
 import ConfigParser
@@ -25,6 +27,21 @@ def parse_interval(interval):
     val = int(interval.rstrip('smhd')) * unit
     return val
 ####################
+
+def get_conf_file():
+    """Get app config file.
+
+    Returns:
+        App config file path.
+    """
+    file_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    default_conf_path = os.path.join(file_dir, 'app.conf')
+
+    parser = argparse.ArgumentParser(description='SocialMention program')
+    parser.add_argument('--conf', default=default_conf_path, help="program config file")
+    args = parser.parse_args()
+    conf_path = args.conf
+    return conf_path
 
 def parse_conf_file(file_path):
     """Parse config file based on ``file_path``.
@@ -115,7 +132,8 @@ def do_search_and_save_to_file(search_url, output_file):
 def main():
     """Main logic of the program.
     """
-    conf_dict = parse_conf_file("app.conf")
+    conf_path = get_conf_file()
+    conf_dict = parse_conf_file(conf_path)
     url_base = 'http://api2.socialmention.com/search?'
     search_url = build_search_url(conf_dict, url_base)
 
